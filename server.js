@@ -2,8 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const db = require('./dbconfig');
 const cors = require('cors');
+const http = require('http');
 const app = express();
-const port = 5000;
+const server = http.Server(app);
+const port = process.env.PORT || 3338;
 
 app.use(bodyParser.json())
 app.use(cors());
@@ -11,21 +13,15 @@ app.use(
   bodyParser.urlencoded({
     extended: true,
   })
-)
-
+);
+app.use('/', express.static(path.join(__dirname, 'html')));
 app.use(express.json());
-
-app.use(
-    express.urlencoded({
-      extended: true,
-    })
-  )
 
   app.get('/users', db.getUsers);
   app.post('/users', db.createUser);
   app.post('/createAppointment', db.addUserAppointment);
   app.post('/upload', db.addUserIdentification);
 
-app.listen(port, () => {
-  console.log(`Done is running on port ${port}.`);
+server.listen(port, () => {
+  console.log(`Listening on http://localhost:${port}/`);
 });
